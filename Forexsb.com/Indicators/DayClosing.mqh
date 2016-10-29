@@ -23,7 +23,7 @@
 
 #property copyright "Copyright (C) 2016 Forex Software Ltd."
 #property link      "http://forexsb.com"
-#property version   "2.00"
+#property version   "2.1"
 #property strict
 
 #include <Forexsb.com/Indicator.mqh>
@@ -34,22 +34,23 @@
 class DayClosing : public Indicator
   {
 public:
-    DayClosing(SlotTypes slotType)
-     {
-      SlotType=slotType;
-
-      IndicatorName="Day Closing";
-
-      WarningMessage    = "";
-      IsAllowLTF        = true;
-      ExecTime          = ExecutionTime_AtBarClosing;
-      IsSeparateChart   = false;
-      IsDiscreteValues  = false;
-      IsDefaultGroupAll = false;
-     }
-
-   virtual void Calculate(DataSet &dataSet);
+                     DayClosing(SlotTypes slotType);
+   virtual void      Calculate(DataSet &dataSet);
   };
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void DayClosing::DayClosing(SlotTypes slotType)
+  {
+   SlotType          = slotType;
+   IndicatorName     = "Day Closing";
+   WarningMessage    = "";
+   IsAllowLTF        = true;
+   ExecTime          = ExecutionTime_AtBarClosing;
+   IsSeparateChart   = false;
+   IsDiscreteValues  = false;
+   IsDefaultGroupAll = false;
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -57,7 +58,6 @@ void DayClosing::Calculate(DataSet &dataSet)
   {
    Data=GetPointer(dataSet);
 
-// Calculation
    double adClosePrice[]; ArrayResize(adClosePrice,Data.Bars); ArrayInitialize(adClosePrice,0);
 
    for(int bar=1; bar<Data.Bars; bar++)
@@ -67,14 +67,13 @@ void DayClosing::Calculate(DataSet &dataSet)
       if(time1.day!=time0.day)
          adClosePrice[bar-1]=Data.Close[bar-1];
      }
-     
+
    datetime dayOpeningTime=(Data.ServerTime/86400)*86400;
    datetime closeTime=dayOpeningTime+23*3600+59*60;
 
    if(Data.ServerTime>closeTime)
       adClosePrice[Data.Bars-1]=Data.Close[Data.Bars-1];
 
-// Saving the components
    ArrayResize(Component[0].Value,Data.Bars);
    Component[0].CompName = "Closing price of the day";
    Component[0].DataType = IndComponentType_ClosePrice;

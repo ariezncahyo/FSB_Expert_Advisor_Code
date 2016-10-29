@@ -23,7 +23,7 @@
 
 #property copyright "Copyright (C) 2016 Forex Software Ltd."
 #property link      "http://forexsb.com"
-#property version   "2.00"
+#property version   "2.1"
 #property strict
 
 #include <Forexsb.com/Indicator.mqh>
@@ -90,34 +90,34 @@ void OscillatorofMACD::Calculate(DataSet &dataSet)
    }
    firstBar+=3;
 
-   double adIndicator1[];  ArrayResize(adIndicator1,Data.Bars);
-   double adIndicator2[];  ArrayResize(adIndicator2,Data.Bars);
+   double indicator1[];  ArrayResize(indicator1,Data.Bars);
+   double indicator2[];  ArrayResize(indicator2,Data.Bars);
 
    if(ListParam[0].Index==0)
      {
-      ArrayCopy(adIndicator1, macd1.Component[0].Value);
-      ArrayCopy(adIndicator2, macd2.Component[0].Value);
+      ArrayCopy(indicator1, macd1.Component[0].Value);
+      ArrayCopy(indicator2, macd2.Component[0].Value);
      }
    else if(ListParam[0].Index==1)
      {
-      ArrayCopy(adIndicator1, macd1.Component[1].Value);
-      ArrayCopy(adIndicator2, macd2.Component[1].Value);
+      ArrayCopy(indicator1, macd1.Component[1].Value);
+      ArrayCopy(indicator2, macd2.Component[1].Value);
      }
    else
      {
-      ArrayCopy(adIndicator1, macd1.Component[2].Value);
-      ArrayCopy(adIndicator2, macd2.Component[2].Value);
+      ArrayCopy(indicator1, macd1.Component[2].Value);
+      ArrayCopy(indicator2, macd2.Component[2].Value);
      }
 
    delete macd1;
    delete macd2;
 
-   double adOscillator[];
-   ArrayResize(adOscillator,Data.Bars);
-   ArrayInitialize(adOscillator,0);
+   double oscillator[];
+   ArrayResize(oscillator,Data.Bars);
+   ArrayInitialize(oscillator,0);
 
    for(int bar=firstBar; bar<Data.Bars; bar++)
-      adOscillator[bar]=adIndicator1[bar]-adIndicator2[bar];
+      oscillator[bar]=indicator1[bar]-indicator2[bar];
 
 // Saving the components
 
@@ -125,7 +125,7 @@ void OscillatorofMACD::Calculate(DataSet &dataSet)
    Component[0].CompName = "Oscillator";
    Component[0].DataType = IndComponentType_IndicatorValue;
    Component[0].FirstBar = firstBar;
-   ArrayCopy(Component[0].Value,adOscillator);
+   ArrayCopy(Component[0].Value,oscillator);
 
    ArrayResize(Component[1].Value,Data.Bars);
    Component[1].FirstBar=firstBar;
@@ -169,6 +169,6 @@ void OscillatorofMACD::Calculate(DataSet &dataSet)
    else if(ListParam[0].Text=="Oscillator of MACD changes its direction downward")
       indLogic=IndicatorLogic_The_indicator_changes_its_direction_downward;
 
-   OscillatorLogic(firstBar,previous,adOscillator,0,0,Component[1],Component[2],indLogic);
+   OscillatorLogic(firstBar,previous,oscillator,0,0,Component[1],Component[2],indLogic);
   }
 //+------------------------------------------------------------------+

@@ -61,8 +61,8 @@ void InsideBar::Calculate(DataSet &dataSet)
    const int firstBar=2;
    double adIb[]; ArrayResize(adIb,Data.Bars); ArrayInitialize(adIb,0);
 
-   for(int iBar=2; iBar<Data.Bars; iBar++)
-      adIb[iBar]=((Data.High[iBar-1]<Data.High[iBar-2]) && (Data.Low[iBar-1]>Data.Low[iBar-2])) ? 1 : 0;
+   for(int bar=2; bar<Data.Bars; bar++)
+      adIb[bar]=((Data.High[bar-1]<Data.High[bar-2]) && (Data.Low[bar-1]>Data.Low[bar-2])) ? 1 : 0;
 
 // Saving the components
    ArrayResize(Component[0].Value,Data.Bars);

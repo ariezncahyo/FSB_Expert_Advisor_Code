@@ -23,7 +23,7 @@
 
 #property copyright "Copyright (C) 2016 Forex Software Ltd."
 #property link      "http://forexsb.com"
-#property version   "2.00"
+#property version   "2.1"
 #property strict
 
 #include <Forexsb.com/Indicator.mqh>
@@ -58,7 +58,7 @@ void WeekClosing::Calculate(DataSet &dataSet)
    Data=GetPointer(dataSet);
 
 // Calculation
-   const int firstBar=1;
+   const int firstBar=2;
    double adClosePrice[];
    ArrayResize(adClosePrice,Data.Bars);
    ArrayInitialize(adClosePrice,0);

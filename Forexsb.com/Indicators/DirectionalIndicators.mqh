@@ -34,22 +34,23 @@
 class DirectionalIndicators : public Indicator
   {
 public:
-    DirectionalIndicators(SlotTypes slotType)
-     {
-      SlotType=slotType;
-
-      IndicatorName="Directional Indicators";
-
-      WarningMessage    = "";
-      IsAllowLTF        = true;
-      ExecTime          = ExecutionTime_DuringTheBar;
-      IsSeparateChart   = true;
-      IsDiscreteValues  = false;
-      IsDefaultGroupAll = false;
-     }
-
-   virtual void Calculate(DataSet &dataSet);
+                     DirectionalIndicators(SlotTypes slotType);
+   virtual void      Calculate(DataSet &dataSet);
   };
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void DirectionalIndicators::DirectionalIndicators(SlotTypes slotType)
+  {
+   SlotType          = slotType;
+   IndicatorName     = "Directional Indicators";
+   WarningMessage    = "";
+   IsAllowLTF        = true;
+   ExecTime          = ExecutionTime_DuringTheBar;
+   IsSeparateChart   = true;
+   IsDiscreteValues  = false;
+   IsDefaultGroupAll = false;
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -60,10 +61,10 @@ void DirectionalIndicators::Calculate(DataSet &dataSet)
 // Reading the parameters
    MAMethod maMethod=(MAMethod) ListParam[1].Index;
    int period=(int) NumParam[0].Value;
-   int prev=CheckParam[0].Checked ? 1 : 0;
+   int previous=CheckParam[0].Checked ? 1 : 0;
 
 // Calculation
-   int firstBar=period+2;
+   int firstBar=period+previous+2;
 
    double diPos[]; ArrayResize(diPos,Data.Bars); ArrayInitialize(diPos,0);
    double diNeg[]; ArrayResize(diNeg,Data.Bars); ArrayInitialize(diNeg,0);
@@ -131,29 +132,29 @@ void DirectionalIndicators::Calculate(DataSet &dataSet)
       Component[3].CompName = "Close out short position";
      }
 
-   if(ListParam[0].Text=="ADI+ rises") 
-      OscillatorLogic(firstBar,prev,adiPos,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_rises);
-   else if(ListParam[0].Text=="ADI+ falls") 
-      OscillatorLogic(firstBar,prev,adiPos,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_falls);
-   else if(ListParam[0].Text=="ADI- rises") 
-      OscillatorLogic(firstBar,prev,adiNeg,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_rises);
-   else if(ListParam[0].Text=="ADI- falls") 
-      OscillatorLogic(firstBar,prev,adiNeg,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_falls);
-   else if(ListParam[0].Text=="ADI+ is higher than ADI-") 
-      OscillatorLogic(firstBar,prev,adiOsc,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_is_higher_than_the_level_line);
-   else if(ListParam[0].Text=="ADI+ is lower than ADI-") 
-      OscillatorLogic(firstBar,prev,adiOsc,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_is_lower_than_the_level_line);
-   else if(ListParam[0].Text=="ADI+ crosses ADI- line upward") 
-      OscillatorLogic(firstBar,prev,adiOsc,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_crosses_the_level_line_upward);
-   else if(ListParam[0].Text=="ADI+ crosses ADI- line downward") 
-      OscillatorLogic(firstBar,prev,adiOsc,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_crosses_the_level_line_downward);
-   else if(ListParam[0].Text=="ADI+ changes its direction upward") 
-      OscillatorLogic(firstBar,prev,adiPos,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_changes_its_direction_upward);
-   else if(ListParam[0].Text=="ADI+ changes its direction downward") 
-      OscillatorLogic(firstBar,prev,adiPos,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_changes_its_direction_downward);
-   else if(ListParam[0].Text=="ADI- changes its direction upward") 
-      OscillatorLogic(firstBar,prev,adiNeg,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_changes_its_direction_upward);
-   else if(ListParam[0].Text=="ADI- changes its direction downward") 
-      OscillatorLogic(firstBar,prev,adiNeg,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_changes_its_direction_downward);
+   if(ListParam[0].Text=="ADI+ rises")
+      OscillatorLogic(firstBar,previous,adiPos,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_rises);
+   else if(ListParam[0].Text=="ADI+ falls")
+      OscillatorLogic(firstBar,previous,adiPos,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_falls);
+   else if(ListParam[0].Text=="ADI- rises")
+      OscillatorLogic(firstBar,previous,adiNeg,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_rises);
+   else if(ListParam[0].Text=="ADI- falls")
+      OscillatorLogic(firstBar,previous,adiNeg,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_falls);
+   else if(ListParam[0].Text=="ADI+ is higher than ADI-")
+      OscillatorLogic(firstBar,previous,adiOsc,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_is_higher_than_the_level_line);
+   else if(ListParam[0].Text=="ADI+ is lower than ADI-")
+      OscillatorLogic(firstBar,previous,adiOsc,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_is_lower_than_the_level_line);
+   else if(ListParam[0].Text=="ADI+ crosses ADI- line upward")
+      OscillatorLogic(firstBar,previous,adiOsc,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_crosses_the_level_line_upward);
+   else if(ListParam[0].Text=="ADI+ crosses ADI- line downward")
+      OscillatorLogic(firstBar,previous,adiOsc,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_crosses_the_level_line_downward);
+   else if(ListParam[0].Text=="ADI+ changes its direction upward")
+      OscillatorLogic(firstBar,previous,adiPos,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_changes_its_direction_upward);
+   else if(ListParam[0].Text=="ADI+ changes its direction downward")
+      OscillatorLogic(firstBar,previous,adiPos,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_changes_its_direction_downward);
+   else if(ListParam[0].Text=="ADI- changes its direction upward")
+      OscillatorLogic(firstBar,previous,adiNeg,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_changes_its_direction_upward);
+   else if(ListParam[0].Text=="ADI- changes its direction downward")
+      OscillatorLogic(firstBar,previous,adiNeg,0,0,Component[2],Component[3],IndicatorLogic_The_indicator_changes_its_direction_downward);
   }
 //+------------------------------------------------------------------+

@@ -34,22 +34,23 @@
 class AccumulationDistribution : public Indicator
   {
 public:
-                     AccumulationDistribution(SlotTypes slotType)
-     {
-      SlotType=slotType;
-
-      IndicatorName="Accumulation Distribution";
-
-      WarningMessage    = "";
-      IsAllowLTF        = true;
-      ExecTime          = ExecutionTime_DuringTheBar;
-      IsSeparateChart   = true;
-      IsDiscreteValues  = false;
-      IsDefaultGroupAll = false;
-     }
-
+                     AccumulationDistribution(SlotTypes slotType);
    virtual void      Calculate(DataSet &dataSet);
   };
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void AccumulationDistribution::AccumulationDistribution(SlotTypes slotType)
+  {
+   SlotType          = slotType;
+   IndicatorName     = "Accumulation Distribution";
+   WarningMessage    = "";
+   IsAllowLTF        = true;
+   ExecTime          = ExecutionTime_DuringTheBar;
+   IsSeparateChart   = true;
+   IsDiscreteValues  = false;
+   IsDefaultGroupAll = false;
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -58,16 +59,18 @@ void AccumulationDistribution::Calculate(DataSet &dataSet)
    Data=GetPointer(dataSet);
 
 // Reading the parameters
-   int prev=CheckParam[0].Checked ? 1 : 0;
+   int previous=CheckParam[0].Checked ? 1 : 0;
 
 // Calculation
-   const int firstBar=3;
+   int firstBar=previous+2;
 
-   double ad[]; ArrayResize(ad,Data.Bars); ArrayInitialize(ad,0);
+   double accumulationDistribution[];
+   ArrayResize(accumulationDistribution,Data.Bars);
+   ArrayInitialize(accumulationDistribution,0);
 
-   ad[0]=(Data.Close[0]-Data.Low[0]) -(Data.High[0]-Data.Close[0]);
+   accumulationDistribution[0]=(Data.Close[0]-Data.Low[0]) -(Data.High[0]-Data.Close[0]);
    if((Data.High[0]-Data.Low[0])>0)
-      ad[0]=ad[0]/(Data.High[0]-Data.Low[0])*Data.Volume[0];
+      accumulationDistribution[0]=accumulationDistribution[0]/(Data.High[0]-Data.Low[0])*Data.Volume[0];
 
    for(int bar=1; bar<Data.Bars; bar++)
      {
@@ -77,7 +80,7 @@ void AccumulationDistribution::Calculate(DataSet &dataSet)
       if(range>0)
          delta=Data.Volume[bar]*(2*Data.Close[bar]-Data.High[bar]-Data.Low[bar])/range;
 
-      ad[bar]=ad[bar-1]+delta;
+      accumulationDistribution[bar]=accumulationDistribution[bar-1]+delta;
      }
 
 // Saving the components
@@ -86,7 +89,7 @@ void AccumulationDistribution::Calculate(DataSet &dataSet)
    Component[0].CompName = "Accumulation Distribution";
    Component[0].DataType = IndComponentType_IndicatorValue;
    Component[0].FirstBar = firstBar;
-   ArrayCopy(Component[0].Value,ad);
+   ArrayCopy(Component[0].Value,accumulationDistribution);
 
    ArrayResize(Component[1].Value,Data.Bars);
    Component[1].FirstBar=firstBar;
@@ -122,6 +125,6 @@ void AccumulationDistribution::Calculate(DataSet &dataSet)
    else if(ListParam[0].Text=="AD changes its direction downward")
       indLogic=IndicatorLogic_The_indicator_changes_its_direction_downward;
 
-   OscillatorLogic(firstBar,prev,ad,0,0,Component[1],Component[2],indLogic);
+   OscillatorLogic(firstBar,previous,accumulationDistribution,0,0,Component[1],Component[2],indLogic);
   }
 //+------------------------------------------------------------------+

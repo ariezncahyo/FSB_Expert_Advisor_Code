@@ -34,22 +34,23 @@
 class EntryHour : public Indicator
   {
 public:
-    EntryHour(SlotTypes slotType)
-     {
-      SlotType=slotType;
-
-      IndicatorName="Entry Hour";
-
-      WarningMessage    = "";
-      IsAllowLTF        = true;
-      ExecTime          = ExecutionTime_DuringTheBar;
-      IsSeparateChart   = false;
-      IsDiscreteValues  = false;
-      IsDefaultGroupAll = true;
-     }
-
-   virtual void Calculate(DataSet &dataSet);
+                     EntryHour(SlotTypes slotType);
+   virtual void      Calculate(DataSet &dataSet);
   };
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void EntryHour::EntryHour(SlotTypes slotType)
+  {
+   SlotType          = slotType;
+   IndicatorName     = "Entry Hour";
+   WarningMessage    = "";
+   IsAllowLTF        = true;
+   ExecTime          = ExecutionTime_DuringTheBar;
+   IsSeparateChart   = false;
+   IsDiscreteValues  = false;
+   IsDefaultGroupAll = true;
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -61,7 +62,7 @@ void EntryHour::Calculate(DataSet &dataSet)
    int entryHour   = (int) NumParam[0].Value;
    int entryMinute = (int) NumParam[1].Value;
 // Calculation
-   const int firstBar=1;
+   const int firstBar=2;
    double adBars[]; ArrayResize(adBars,Data.Bars);ArrayInitialize(adBars,0);
 
 // Calculation of the logic

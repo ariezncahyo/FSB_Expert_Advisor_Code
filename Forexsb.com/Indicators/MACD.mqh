@@ -34,22 +34,23 @@
 class MACD : public Indicator
   {
 public:
-    MACD(SlotTypes slotType)
-     {
-      SlotType=slotType;
-
-      IndicatorName="MACD";
-
-      WarningMessage    = "";
-      IsAllowLTF        = true;
-      ExecTime          = ExecutionTime_DuringTheBar;
-      IsSeparateChart   = true;
-      IsDiscreteValues  = false;
-      IsDefaultGroupAll = false;
-     }
-
-   virtual void Calculate(DataSet &dataSet);
+                     MACD(SlotTypes slotType);
+   virtual void      Calculate(DataSet &dataSet);
   };
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void MACD::MACD(SlotTypes slotType)
+  {
+   SlotType          = slotType;
+   IndicatorName     = "MACD";
+   WarningMessage    = "";
+   IsAllowLTF        = true;
+   ExecTime          = ExecutionTime_DuringTheBar;
+   IsSeparateChart   = true;
+   IsDiscreteValues  = false;
+   IsDefaultGroupAll = false;
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -57,36 +58,33 @@ void MACD::Calculate(DataSet &dataSet)
   {
    Data=GetPointer(dataSet);
 
-// Reading the parameters
    MAMethod maMethod = (MAMethod) ListParam[1].Index;
    MAMethod slMethod = (MAMethod) ListParam[3].Index;
    BasePrice basePrice=(BasePrice) ListParam[2].Index;
    int slowPeriod = (int) NumParam[0].Value;
    int fastPeriod = (int) NumParam[1].Value;
-   int signalLinePeriod=(int) NumParam[2].Value;
+   int signalPeriod=(int) NumParam[2].Value;
    int previous=CheckParam[0].Checked ? 1 : 0;
 
-// Calculation
-   int firstBar=slowPeriod+fastPeriod+3;
+   int firstBar=MathMax(MathMax(slowPeriod,fastPeriod),signalPeriod)+previous+2;
 
-   double basePrc[];  Price(basePrice,basePrc);
-   double adMASlow[]; MovingAverage(slowPeriod,0,maMethod,basePrc,adMASlow);
-   double adMAFast[]; MovingAverage(fastPeriod,0,maMethod,basePrc,adMAFast);
-   double adMACD[];   ArrayResize(adMACD,Data.Bars); ArrayInitialize(adMACD,0);
+   double price[];  Price(basePrice,price);
+   double maSlow[]; MovingAverage(slowPeriod,0,maMethod,price,maSlow);
+   double maFast[]; MovingAverage(fastPeriod,0,maMethod,price,maFast);
+   double adMACD[]; ArrayResize(adMACD,Data.Bars); ArrayInitialize(adMACD,0);
 
    for(int bar=slowPeriod-1; bar<Data.Bars; bar++)
-      adMACD[bar]=adMAFast[bar]-adMASlow[bar];
+     {
+      adMACD[bar]=maFast[bar]-maSlow[bar];
+     }
 
    double maSignalLine[];
-   MovingAverage(signalLinePeriod,0,slMethod,adMACD,maSignalLine);
+   MovingAverage(signalPeriod,0,slMethod,adMACD,maSignalLine);
 
-// adHistogram represents MACD oscillator
    double adHistogram[]; ArrayResize(adHistogram,Data.Bars);ArrayInitialize(adHistogram,0);
 
-   for(int bar=slowPeriod+signalLinePeriod-1; bar<Data.Bars; bar++)
+   for(int bar=slowPeriod+signalPeriod-1; bar<Data.Bars; bar++)
       adHistogram[bar]=adMACD[bar]-maSignalLine[bar];
-
-// Saving the components
 
    ArrayResize(Component[0].Value,Data.Bars);
    Component[0].CompName = "Histogram";

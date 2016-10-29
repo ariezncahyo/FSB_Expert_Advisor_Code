@@ -62,7 +62,7 @@ void ExitHour::Calculate(DataSet &dataSet)
    int exitHour=(int) NumParam[0].Value;
 
 // Calculation
-   const int firstBar=1;
+   const int firstBar=2;
    double adBars[];
    ArrayResize(adBars,Data.Bars);
    ArrayInitialize(adBars,0);

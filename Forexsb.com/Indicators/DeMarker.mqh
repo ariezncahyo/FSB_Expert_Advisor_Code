@@ -59,31 +59,31 @@ void DeMarker::Calculate(DataSet &dataSet)
 
 // Reading the parameters
    MAMethod maMethod=(MAMethod) ListParam[1].Index;
-   int iPeriod=(int) NumParam[0].Value;
+   int period=(int) NumParam[0].Value;
    double dLevel=NumParam[1].Value;
-   int iPrvs=CheckParam[0].Checked ? 1 : 0;
+   int previous=CheckParam[0].Checked ? 1 : 0;
 
 // Calculation
-   int firstBar=iPeriod+2;
+   int firstBar=period + previous + 2;
    double adDeMax[];    ArrayResize(adDeMax,Data.Bars);    ArrayInitialize(adDeMax,0);
    double adDeMin[];    ArrayResize(adDeMin,Data.Bars);    ArrayInitialize(adDeMin,0);
    double adDeMarker[]; ArrayResize(adDeMarker,Data.Bars); ArrayInitialize(adDeMarker,0);
 
-   for(int iBar=1; iBar<Data.Bars; iBar++)
+   for(int bar=1; bar<Data.Bars; bar++)
      {
-      adDeMax[iBar] = Data.High[iBar] > Data.High[iBar - 1] ? Data.High[iBar] - Data.High[iBar - 1] : 0;
-      adDeMin[iBar] = Data.Low[iBar] < Data.Low[iBar - 1] ? Data.Low[iBar - 1] - Data.Low[iBar] : 0;
+      adDeMax[bar] = Data.High[bar] > Data.High[bar - 1] ? Data.High[bar] - Data.High[bar - 1] : 0;
+      adDeMin[bar] = Data.Low[bar] < Data.Low[bar - 1] ? Data.Low[bar - 1] - Data.Low[bar] : 0;
      }
 
-   double adDeMaxMA[]; MovingAverage(iPeriod,0,maMethod,adDeMax,adDeMaxMA);
-   double adDeMinMA[]; MovingAverage(iPeriod,0,maMethod,adDeMin,adDeMinMA);
+   double adDeMaxMA[]; MovingAverage(period,0,maMethod,adDeMax,adDeMaxMA);
+   double adDeMinMA[]; MovingAverage(period,0,maMethod,adDeMin,adDeMinMA);
 
-   for(int iBar=firstBar; iBar<Data.Bars; iBar++)
+   for(int bar=firstBar; bar<Data.Bars; bar++)
      {
-      if(MathAbs(adDeMaxMA[iBar]+adDeMinMA[iBar]-0)<Epsilon())
-         adDeMarker[iBar]=0;
+      if(MathAbs(adDeMaxMA[bar]+adDeMinMA[bar]-0)<Epsilon())
+         adDeMarker[bar]=0;
       else
-         adDeMarker[iBar]=adDeMaxMA[iBar]/(adDeMaxMA[iBar]+adDeMinMA[iBar]);
+         adDeMarker[bar]=adDeMaxMA[bar]/(adDeMaxMA[bar]+adDeMinMA[bar]);
      }
 
 // Saving the components
@@ -136,6 +136,6 @@ void DeMarker::Calculate(DataSet &dataSet)
    else if(ListParam[0].Text=="DeMarker changes its direction downward") 
       indLogic=IndicatorLogic_The_indicator_changes_its_direction_downward;
 
-   OscillatorLogic(firstBar,iPrvs,adDeMarker,dLevel,1-dLevel,Component[1],Component[2],indLogic);
+   OscillatorLogic(firstBar,previous,adDeMarker,dLevel,1-dLevel,Component[1],Component[2],indLogic);
   }
 //+------------------------------------------------------------------+

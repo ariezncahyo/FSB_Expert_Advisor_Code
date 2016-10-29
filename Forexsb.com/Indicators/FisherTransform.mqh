@@ -59,28 +59,28 @@ void FisherTransform::Calculate(DataSet &dataSet)
 
 // Reading the parameters
    BasePrice basePrice=(BasePrice) ListParam[1].Index;
-   int iPeriod=(int) NumParam[0].Value;
-   int iPrvs=CheckParam[0].Checked ? 1 : 0;
+   int period=(int) NumParam[0].Value;
+   int previous=CheckParam[0].Checked ? 1 : 0;
 
 // Calculation
-   int iFirstBar=iPeriod+2;
+   int firstBar=period + previous + 2;
 
    double adPrice[]; Price(basePrice,adPrice);
    double adValue[]; ArrayResize(adValue,Data.Bars); ArrayInitialize(adValue,0);
 
-   for(int iBar=0; iBar<iPeriod; iBar++)
-      adValue[iBar]=0;
+   for(int bar=0; bar<period; bar++)
+      adValue[bar]=0;
 
-   for(int iBar=iPeriod; iBar<Data.Bars; iBar++)
+   for(int bar=period; bar<Data.Bars; bar++)
      {
       double dHighestHigh=DBL_MIN;
       double dLowestLow=DBL_MAX;
-      for(int i=0; i<iPeriod; i++)
+      for(int i=0; i<period; i++)
         {
-         if(adPrice[iBar-i]>dHighestHigh)
-            dHighestHigh=adPrice[iBar-i];
-         if(adPrice[iBar-i]<dLowestLow)
-            dLowestLow=adPrice[iBar-i];
+         if(adPrice[bar-i]>dHighestHigh)
+            dHighestHigh=adPrice[bar-i];
+         if(adPrice[bar-i]<dLowestLow)
+            dLowestLow=adPrice[bar-i];
         }
 
       if(MathAbs(dHighestHigh-dLowestLow)<Epsilon())
@@ -88,27 +88,27 @@ void FisherTransform::Calculate(DataSet &dataSet)
       if(MathAbs(dHighestHigh-dLowestLow-0.5)<Epsilon())
          dHighestHigh+=Data.Point;
 
-      adValue[iBar]=0.33*2*((adPrice[iBar]-dLowestLow)/(dHighestHigh-dLowestLow)-0.5)+0.67*adValue[iBar - 1];
+      adValue[bar]=0.33*2*((adPrice[bar]-dLowestLow)/(dHighestHigh-dLowestLow)-0.5)+0.67*adValue[bar - 1];
      }
 
    double adFt[];
    ArrayResize(adFt,Data.Bars);
    adFt[0]=0;
-   for(int iBar=1; iBar<Data.Bars; iBar++)
-      adFt[iBar]=0.5*MathLog10((1+adValue[iBar])/(1-adValue[iBar]))+0.5*adFt[iBar-1];
+   for(int bar=1; bar<Data.Bars; bar++)
+      adFt[bar]=0.5*MathLog10((1+adValue[bar])/(1-adValue[bar]))+0.5*adFt[bar-1];
 
 // Saving the components
    ArrayResize(Component[0].Value,Data.Bars);
    Component[0].CompName = "Fisher Transform";
    Component[0].DataType = IndComponentType_IndicatorValue;
-   Component[0].FirstBar = iFirstBar;
+   Component[0].FirstBar = firstBar;
    ArrayCopy(Component[0].Value,adFt);
 
    ArrayResize(Component[1].Value,Data.Bars);
-   Component[1].FirstBar=iFirstBar;
+   Component[1].FirstBar=firstBar;
 
    ArrayResize(Component[2].Value,Data.Bars);
-   Component[2].FirstBar=iFirstBar;
+   Component[2].FirstBar=firstBar;
 
 // Sets the Component's type
    if(SlotType==SlotTypes_OpenFilter)
@@ -146,6 +146,6 @@ void FisherTransform::Calculate(DataSet &dataSet)
    else if(ListParam[0].Text=="Fisher Transform changes its direction downward")
       indLogic=IndicatorLogic_The_indicator_changes_its_direction_downward;
 
-   OscillatorLogic(iFirstBar,iPrvs,adFt,0,0,Component[1],Component[2],indLogic);
+   OscillatorLogic(firstBar,previous,adFt,0,0,Component[1],Component[2],indLogic);
   }
 //+------------------------------------------------------------------+

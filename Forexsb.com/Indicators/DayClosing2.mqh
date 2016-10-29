@@ -23,7 +23,7 @@
 
 #property copyright "Copyright (C) 2016 Forex Software Ltd."
 #property link      "http://forexsb.com"
-#property version   "2.00"
+#property version   "2.1"
 #property strict
 
 #include <Forexsb.com/Indicator.mqh>
@@ -34,21 +34,22 @@
 class DayClosing2 : public Indicator
   {
 public:
-    DayClosing2(SlotTypes slotType)
-     {
-      SlotType=slotType;
-
-      IndicatorName="Day Closing 2";
-
-      IsAllowLTF        = true;
-      ExecTime          = ExecutionTime_DuringTheBar;
-      IsSeparateChart   = false;
-      IsDiscreteValues  = false;
-      IsDefaultGroupAll = false;
-     }
-
-   virtual void Calculate(DataSet &dataSet);
+                     DayClosing2(SlotTypes slotType);
+   virtual void      Calculate(DataSet &dataSet);
   };
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void DayClosing2::DayClosing2(SlotTypes slotType)
+  {
+   SlotType          = slotType;
+   IndicatorName     = "Day Closing 2";
+   IsAllowLTF        = true;
+   ExecTime          = ExecutionTime_DuringTheBar;
+   IsSeparateChart   = false;
+   IsDiscreteValues  = false;
+   IsDefaultGroupAll = false;
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -56,13 +57,11 @@ void DayClosing2::Calculate(DataSet &dataSet)
   {
    Data=GetPointer(dataSet);
 
-// Reading the parameters
    int dayClosingHour    = (int) NumParam[0].Value;
    int dayClosingMin     = (int) NumParam[1].Value;
    int fridayClosingHour = (int) NumParam[2].Value;
    int fridayClosingMin  = (int) NumParam[3].Value;
 
-// Calculation
    double adClosePrice[]; ArrayResize(adClosePrice,Data.Bars); ArrayInitialize(adClosePrice,0);
 
    for(int bar=1; bar<Data.Bars; bar++)
@@ -80,7 +79,6 @@ void DayClosing2::Calculate(DataSet &dataSet)
    ArrayResize(adAllowOpenShort,Data.Bars);
    ArrayInitialize(adAllowOpenShort,1);
 
-// Check the last bar
    datetime dayOpeningTime=(Data.ServerTime/86400)*86400;
 
    MqlDateTime mqlCloseTime;
@@ -97,7 +95,6 @@ void DayClosing2::Calculate(DataSet &dataSet)
       adAllowOpenShort[Data.Bars-1]=0; // Prevent entries after closing time
      }
 
-// Saving the components
    ArrayResize(Component[0].Value,Data.Bars);
    Component[0].CompName = "Closing price of the day";
    Component[0].DataType = IndComponentType_ClosePrice;
