@@ -23,7 +23,7 @@
 
 #property copyright "Copyright (C) 2016 Forex Software Ltd."
 #property link      "http://forexsb.com"
-#property version   "4.00"
+#property version   "5.00"
 #property strict
 
 #include <Forexsb.com\StrategyManager.mqh>
@@ -55,6 +55,7 @@ private:
     Position       *position;
     Logger         *logger;
     StrategyTrader *strategyTrader;
+    ENUM_ORDER_TYPE_FILLING orderFillingType;
 
     // Properties
     int      lastError;
@@ -83,6 +84,7 @@ private:
     bool IsTradeContextFree(void);
     void ActivateProtectionMinAccount(void);
     void CloseExpert(void);
+    bool IsFillingTypeAllowed(int fillingType);
 
     // Trading methods
     double GetTakeProfitPrice(int type, int takeProfit);
@@ -136,6 +138,7 @@ void ActionTrade::ActionTrade(void)
     position = new Position();
     logger   = new Logger();
     strategyTrader = new StrategyTrader(GetPointer(this));
+    orderFillingType = IsFillingTypeAllowed(ORDER_FILLING_FOK) ? ORDER_FILLING_FOK : ORDER_FILLING_IOC;
 }
 
 void ActionTrade::~ActionTrade(void)
@@ -682,7 +685,7 @@ bool ActionTrade::ManageOrderSend(int type, double lots, int stopLoss, int takeP
             request.action       = TRADE_ACTION_DEAL;
             request.symbol       = _Symbol;
             request.volume       = orderLots;
-            request.type_filling = ORDER_FILLING_FOK;
+            request.type_filling = orderFillingType;
             request.type         = (type == OP_BUY) ? ORDER_TYPE_BUY : ORDER_TYPE_SELL;
             request.price        = (type == OP_BUY) ? tick.bid : tick.ask;
             request.deviation    = 10;
@@ -1262,4 +1265,10 @@ void ActionTrade::CloseExpert(void)
 {
     ExpertRemove();
     OnDeinit(0);
+}
+
+bool ActionTrade::IsFillingTypeAllowed(int fillingType)
+{
+   int filling=(int)SymbolInfoInteger(_Symbol,SYMBOL_FILLING_MODE);
+   return (filling&fillingType==fillingType);
 }
